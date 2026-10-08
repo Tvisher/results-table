@@ -1,9 +1,9 @@
 <script setup>
-import { reactive, ref } from "vue";
+import { reactive, ref, onMounted } from "vue";
 import DataTable from "primevue/datatable";
 import CustomSelect from "@/components/CustomSelect.vue";
 import Column from "primevue/column";
-import axios from "axios";
+import { getFirstStepData } from "@/services/api.js";
 
 const sortState = reactive({
   field: null,
@@ -164,6 +164,16 @@ const getBgClass = (val) => {
 const onNominationChange = (val) => {
   console.log("Новое значение из события:", val);
 };
+
+onMounted(() => {
+  getFirstStepData()
+    .then((res) => {
+      console.log(res);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
 </script>
 
 <template>
@@ -181,7 +191,7 @@ const onNominationChange = (val) => {
     :tableStyle="{ width: '100%', tableLayout: 'fixed' }"
     class="custom-table"
   >
-    <Column field="nomination" header="Номинация" sortable>
+    <Column field="nomination" header="Номинация" sortable style="width: 18%">
       <template #body="{ data }">
         <div class="cell-content" :title="data.nomination">
           {{ data.nomination }}
@@ -189,7 +199,7 @@ const onNominationChange = (val) => {
       </template>
     </Column>
 
-    <Column field="projectName" header="Проект" sortable>
+    <Column field="projectName" header="Проект" sortable style="width: 18%">
       <template #body="{ data }">
         <div class="cell-content" :title="data.projectName">
           {{ data.projectName }}
@@ -197,7 +207,12 @@ const onNominationChange = (val) => {
       </template>
     </Column>
 
-    <Column field="totalVotes" header="Всего голосов" sortable>
+    <Column
+      field="totalVotes"
+      header="Всего голосов"
+      sortable
+      style="width: 8%"
+    >
       <template #body="{ data }">
         <div class="cell-content" :title="data.totalVotes">
           {{ data.totalVotes }}
@@ -205,13 +220,13 @@ const onNominationChange = (val) => {
       </template>
     </Column>
 
-    <Column field="short" header="Шорт" sortable>
+    <Column field="short" header="Шорт" sortable style="width: 8%">
       <template #body="{ data }">
         <div class="cell-content" :title="data.short">{{ data.short }}</div>
       </template>
     </Column>
 
-    <Column field="notShort" header="Не шорт" sortable>
+    <Column field="notShort" header="Не шорт" sortable style="width: 8%">
       <template #body="{ data }">
         <div class="cell-content" :title="data.notShort">
           {{ data.notShort }}
@@ -219,7 +234,7 @@ const onNominationChange = (val) => {
       </template>
     </Column>
 
-    <Column field="jury" header="Жюри (ФИО, проголосовали)" style="width: 20%">
+    <Column field="jury" header="Жюри (ФИО, проголосовали)" style="width: 30%">
       <template #body="{ data }">
         <div class="cell-content" :title="data.jury">{{ data.jury }}</div>
       </template>
@@ -229,7 +244,7 @@ const onNominationChange = (val) => {
       field="shortShare"
       header="Доля шорта, %"
       sortable
-      style="width: 8.5%"
+      style="width: 10%"
     >
       <template #body="{ data }">
         <div :class="['share-cell', getBgClass(data.shortShare)]">

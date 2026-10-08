@@ -37,7 +37,6 @@ const emit = defineEmits(["update:modelValue"]);
 </template>
 
 <style lang="scss">
-// Цветовая палитра под ваш макет
 $primary-pink: #e02868;
 $light-pink-bg: #f8eaef;
 $border-pink: #f2a8c3;
@@ -45,6 +44,7 @@ $text-color: #1a1a1a;
 $border-radius: 12px;
 
 .custom-select-wrapper {
+  margin-top: 64px !important;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -52,9 +52,11 @@ $border-radius: 12px;
   max-width: 320px;
 
   .select-label {
-    font-size: 13px;
-    color: #8c8c8c;
-    font-weight: 500;
+    color: #a1a7aa;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 150%; /* 18px */
   }
 }
 
@@ -81,7 +83,7 @@ $border-radius: 12px;
     font-weight: 600;
     color: $text-color;
     font-size: 14px;
-    padding: 17px 12px;
+    padding: 19px 12px;
   }
 
   .p-select-dropdown {
