@@ -1,14 +1,17 @@
 <script setup>
-import { reactive, ref, onMounted } from "vue";
+import { reactive, ref, onMounted, onUnmounted } from "vue";
 import DataTable from "primevue/datatable";
 import CustomSelect from "@/components/CustomSelect.vue";
 import Column from "primevue/column";
-import { getFirstStepData } from "@/services/api.js";
+import { getFirstStepData, getExel } from "@/services/api.js";
 
 const sortState = reactive({
   field: null,
   order: null,
+  nomination: "all",
 });
+
+const ajaxLoad = ref(false);
 
 // 1. Создаем переменную для выбранного значения (по умолчанию 'hiring_comm' или null)
 const selectedNomination = ref("all");
@@ -21,7 +24,6 @@ const tableData = ref([]);
 const onSort = (event) => {
   sortState.field = event.sortField;
   sortState.order = event.sortOrder === 1 ? "asc" : "desc";
-  console.log(sortState);
 };
 
 const formatPercent = (val) => {
@@ -42,20 +44,47 @@ const getBgClass = (val) => {
 
 // Если хотите реагировать через функцию прямо из шаблона:
 const onNominationChange = (val) => {
-  console.log("Новое значение из события:", val);
+  sortState.nomination = val;
   if (val === "all") {
     tableData.value = [...nominationAllData.value];
-    return;
+  } else {
+    tableData.value = nominationAllData.value.filter(
+      (item) => item.nominationId == val,
+    );
   }
-  tableData.value = nominationAllData.value.filter(
-    (item) => item.nominationId == val,
-  );
+
+  if (!tableData.value.length) {
+    sortState.field = null;
+    sortState.order = null;
+  }
 };
 
+function getExelExport() {
+  if (!tableData.value.length || ajaxLoad.value) return;
+  ajaxLoad.value = true;
+  getExel({ ...sortState })
+    .then((res) => {
+      const fileUrl = res.data.url;
+      const a = document.createElement("a");
+      a.href = fileUrl;
+      a.download = res.data.filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    })
+    .catch((err) => {
+      alert("Произошла ошибка, пожалуйста попробуйте позднее");
+    })
+    .finally(() => (ajaxLoad.value = false));
+}
+
 onMounted(() => {
+  document
+    .querySelector(".export-btn")
+    .addEventListener("click", getExelExport);
+
   getFirstStepData()
     .then((res) => {
-      console.log(res.data);
       const noms = res.data.nominations.map((item) => {
         return { name: item.name, id: item.id };
       });
@@ -73,13 +102,17 @@ onMounted(() => {
         }
       });
 
-      console.log(bids);
       tableData.value = [...bids];
       nominationAllData.value = bids;
     })
     .catch((err) => {
       console.log(err);
     });
+});
+onUnmounted(() => {
+  document
+    .querySelector(".export-btn")
+    .removeEventListener("click", getExelExport);
 });
 </script>
 

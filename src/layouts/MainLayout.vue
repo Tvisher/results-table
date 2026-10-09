@@ -18,7 +18,7 @@
 
         <router-link
           to="/step-two"
-          class="nav-step-btn"
+          class="nav-step-btn hide"
           exact-active-class="active"
         >
           Голосование — 2 этап
@@ -33,4 +33,9 @@
 
 <script setup></script>
 
-<style scoped></style>
+<style>
+.nav-step-btn.hide {
+  opacity: 0.3;
+  pointer-events: none;
+}
+</style>
